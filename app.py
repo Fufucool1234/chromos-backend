@@ -17,7 +17,9 @@ def generate():
     prompt = data.get("prompt", "")
 
     cleaned_prompt = clean_string(prompt)
-    scored_tags = score_tags(cleaned_prompt)
+    # TEMP FIX: bypass score_tags crash
+    tags = cleaned_prompt.split()
+    scored_tags = [{"tag": tag, "score": 1.0} for tag in tags]
     clustered = cluster_and_label_tags(scored_tags)
     labels = [t["label"] for t in clustered]
     
