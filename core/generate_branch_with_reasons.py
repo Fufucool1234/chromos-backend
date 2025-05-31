@@ -1,4 +1,4 @@
-def generate_branch(prompt):
+def generate_palette_branch(prompt):
     # Dummy color branch generator
     return [
         {
