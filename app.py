@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from core.tag_scorer import score_tags
-from core.generate_palette import generate_palette_branch
+from core.generate_branch_with_reasons import generate_palette_branch
 
 app = Flask(__name__)
 CORS(app, origins="*")  # Wide-open for now; tighten later
