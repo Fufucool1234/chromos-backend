@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -9,7 +8,9 @@ from core.label_clusters import get_label_category
 from core.cluster_logic import cluster_and_label_tags
 
 app = Flask(__name__)
-CORS(app)
+
+# Allow only your frontend domain in production
+CORS(app, resources={r"/generate": {"origins": "https://chromos-nextjs.vercel.app"}})
 
 @app.route("/generate", methods=["POST"])
 def generate():
