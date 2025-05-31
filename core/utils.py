@@ -1,4 +1,2 @@
-import re
-
-def clean_string(text):
-    return re.sub(r'\s+', ' ', text.strip().lower())
+def clean_string(s):
+    return s.strip().lower().replace(" ", "-")
