@@ -1,2 +1,1 @@
-def cluster_tags(tags):
-    return {"Cluster 1": tags}
+# Placeholder for cluster_logic.py
