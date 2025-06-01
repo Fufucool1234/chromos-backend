@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 from core.tag_scorer import score_tags
 from core.cluster_logic import cluster_and_label_tags
 from core.generate_branch_with_reasons import generate_palette_branch
-from utils.clean_prompt import clean_prompt
+from core.utils import clean_prompt
 import traceback
 
 app = Flask(__name__)
