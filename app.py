@@ -1,38 +1,24 @@
-
 from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
-from core.tag_scorer import score_tags
-from core.cluster_logic import cluster_and_label_tags
+from flask_cors import CORS
 from core.generate_branch_with_reasons import generate_palette_branch
 from core.utils import clean_prompt
-import traceback
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="*")  # You can replace "*" with your frontend URL in production
 
-@app.route('/generate', methods=['POST'])
-@cross_origin()
+@app.route("/generate", methods=["POST"])
 def generate():
     try:
-        prompt = request.json.get('prompt', '')
-        if not prompt:
-            return jsonify({"error": "Prompt is missing."}), 400
-
+        data = request.get_json()
+        prompt = data.get("prompt", "")
         cleaned_prompt = clean_prompt(prompt)
 
-        # Ensure score_tags receives a list of strings
-        prompt_list = [cleaned_prompt]
-        scored_tags = score_tags(prompt_list)
-        clustered = cluster_and_label_tags(scored_tags)
+        # Generate the palette using your backend engine
+        output = generate_palette_branch(cleaned_prompt)
 
-        palette = generate_palette_branch(cleaned_prompt)
-
-        return jsonify(palette), 200
-
+        return jsonify(output)
     except Exception as e:
-        print("🔥 Exception caught in /generate:")
-        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
