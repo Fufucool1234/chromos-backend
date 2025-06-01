@@ -1,11 +1,7 @@
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 from core.tag_scorer import score_tags
-from core.utils import clean_string
-from core.luma_engine import LumaEngine
-from core.label_clusters import get_label_category
+from core.generate_branch_with_reasons import generate_palette_branch
 from core.cluster_logic import cluster_and_label_tags
 
 app = Flask(__name__)
@@ -13,20 +9,22 @@ CORS(app)
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    data = request.get_json()
-    prompt = data.get("prompt", "")
+    try:
+        data = request.get_json()
+        prompt = data.get("prompt", "")
 
-    cleaned_prompt = clean_string(prompt)
-    # TEMP FIX: bypass score_tags crash
-    tags = cleaned_prompt.split()
-    scored_tags = [{"tag": tag, "score": 1.0} for tag in tags]
-    clustered = cluster_and_label_tags(scored_tags)
-    labels = [t["label"] for t in clustered]
-    
-    engine = LumaEngine(prompt, override_tags=labels)
-    engine.run_all()
+        if not prompt:
+            return jsonify({"error": "No prompt provided."}), 400
 
-    return jsonify(engine.output_data)
+        cleaned_prompt = prompt.strip()
+        scored_tags = score_tags([cleaned_prompt])  # FIXED: wrapped in list
+        clustered = cluster_and_label_tags(scored_tags)
+        result = generate_palette_branch(prompt, clustered)
+
+        return jsonify(result)
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
